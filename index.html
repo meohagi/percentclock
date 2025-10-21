@@ -10,14 +10,40 @@
     <div class="container">
         <h1>하루 진행률</h1>
         <div class="settings">
-            <label for="wakeUpTime">일어나는 시간:</label>
-            <input type="time" id="wakeUpTime" value="07:00">
-            <label for="sleepTime">잠드는 시간:</label>
-            <input type="time" id="sleepTime" value="23:00">
+            <div>
+                <label for="wakeUpTime">일어나는 시각:</label>
+                <input type="time" id="wakeUpTime" value="07:00">
+                <label for="sleepTime">잠드는 시각:</label>
+                <input type="time" id="sleepTime" value="23:00">
+            </div>
+            <div class="options">
+                <div class="option-group">
+                    <span>그래프 형태:</span>
+                    <input type="radio" id="bar" name="graphType" value="bar" checked>
+                    <label for="bar">막대</label>
+                    <input type="radio" id="circle" name="graphType" value="circle">
+                    <label for="circle">원형</label>
+                </div>
+                <div class="option-group">
+                    <span>색상:</span>
+                    <input type="radio" id="green" name="color" value="#4caf50" checked>
+                    <label for="green">초록</label>
+                    <input type="radio" id="red" name="color" value="#f44336">
+                    <label for="red">빨강</label>
+                    <input type="radio" id="blue" name="color" value="#2196f3">
+                    <label for="blue">파랑</label>
+                </div>
+            </div>
             <button id="setButton">설정</button>
         </div>
-        <div class="progress-container">
+        <div class="progress-container" id="bar-container">
             <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="circle-container" id="circle-container" style="display: none;">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+                <circle class="circle-bg" cx="100" cy="100" r="90"></circle>
+                <circle class="circle-progress" id="circleProgress" cx="100" cy="100" r="90"></circle>
+            </svg>
         </div>
         <p id="percentage">0%</p>
     </div>
