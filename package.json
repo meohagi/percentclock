@@ -1,6 +1,6 @@
 {
   "name": "percentage-clock",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A percentage clock desktop application.",
   "main": "main.js",
   "scripts": {
@@ -11,10 +11,6 @@
   "build": {
     "appId": "com.electron.percentage-clock",
     "productName": "Percentage Clock",
-    "files": [
-      "**/*",
-      "!node_modules/**/*"
-    ],
     "win": {
       "target": "nsis",
       "icon": "assets/icon.png"
