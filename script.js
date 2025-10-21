@@ -145,7 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startClock() {
         if (intervalId) clearInterval(intervalId);
-        notificationSent = false; // Reset on new 'Set'
+        notificationSent = false; // Reset notification on new 'Set'
+
+        // Save current time settings to localStorage
+        localStorage.setItem('wakeUpTime', wakeUpTimeInput.value);
+        localStorage.setItem('sleepTime', sleepTimeInput.value);
+
         calculateAndUpdate();
         intervalId = setInterval(calculateAndUpdate, 1000);
     }
@@ -156,6 +161,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const preferredLanguage = localStorage.getItem('preferredLanguage') || 'en';
         languageSelector.value = preferredLanguage;
         setLanguage(preferredLanguage);
+
+        // Load saved times, or use defaults
+        wakeUpTimeInput.value = localStorage.getItem('wakeUpTime') || '07:00';
+        sleepTimeInput.value = localStorage.getItem('sleepTime') || '23:00';
 
         // Set up event listeners
         setButton.addEventListener('click', startClock);
