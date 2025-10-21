@@ -23,11 +23,23 @@ body {
     gap: 15px;
 }
 
-.settings > div {
+.settings > div, .time-picker-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
+}
+
+.time-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.time-picker select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
 .options {
@@ -81,6 +93,7 @@ body {
 #percentage {
     font-size: 24px;
     font-weight: bold;
+    margin-top: 10px;
     margin-bottom: 20px;
 }
 

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
-    const wakeUpTimeInput = document.getElementById('wakeUpTime');
-    const sleepTimeInput = document.getElementById('sleepTime');
+    const wakeUpPickerContainer = document.getElementById('wakeUpPicker');
+    const sleepPickerContainer = document.getElementById('sleepPicker');
     const setButton = document.getElementById('setButton');
     const percentageText = document.getElementById('percentage');
     const graphTypeRadios = document.querySelectorAll('input[name="graphType"]');
@@ -17,13 +17,71 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     let intervalId = null;
     let currentQuote = null;
-    let notificationSent = false;
+    let lastPercentage = 0; // For notification logic
 
     // Circle progress setup
     const radius = circleProgress.r.baseVal.value;
     const circumference = 2 * Math.PI * radius;
     circleProgress.style.strokeDasharray = `${circumference} ${circumference}`;
     circleProgress.style.strokeDashoffset = circumference;
+
+    // --- Time Picker UI ---
+    function createTimePicker(container) {
+        const hourSelect = document.createElement('select');
+        for (let i = 1; i <= 12; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            hourSelect.appendChild(option);
+        }
+
+        const minuteSelect = document.createElement('select');
+        for (let i = 0; i < 60; i++) {
+            const option = document.createElement('option');
+            const value = i.toString().padStart(2, '0');
+            option.value = value;
+            option.textContent = value;
+            minuteSelect.appendChild(option);
+        }
+
+        const ampmSelect = document.createElement('select');
+        const amOption = document.createElement('option');
+        amOption.value = 'AM';
+        const pmOption = document.createElement('option');
+        pmOption.value = 'PM';
+        ampmSelect.appendChild(amOption);
+        ampmSelect.appendChild(pmOption);
+
+        container.appendChild(hourSelect);
+        container.appendChild(document.createTextNode(':'));
+        container.appendChild(minuteSelect);
+        container.appendChild(ampmSelect);
+    }
+
+    function setTimePickerValue(container, time24) {
+        let [hour, minute] = time24.split(':').map(Number);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12 || 12; // Convert 0 to 12 for 12-hour format
+
+        const selects = container.querySelectorAll('select');
+        selects[0].value = hour;
+        selects[1].value = minute.toString().padStart(2, '0');
+        selects[2].value = ampm;
+    }
+
+    function getTimePickerValue(container) {
+        const selects = container.querySelectorAll('select');
+        let hour = parseInt(selects[0].value, 10);
+        const minute = selects[1].value;
+        const ampm = selects[2].value;
+
+        if (ampm === 'PM' && hour !== 12) {
+            hour += 12;
+        } else if (ampm === 'AM' && hour === 12) {
+            hour = 0;
+        }
+        return `${hour.toString().padStart(2, '0')}:${minute}`;
+    }
 
     // --- Internationalization (i18n) ---
     function setLanguage(lang) {
@@ -32,6 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = element.getAttribute('data-i18n-key');
             element.textContent = langData[key];
         });
+
+        // Update AM/PM selectors
+        document.querySelectorAll('.time-picker').forEach(picker => {
+            const ampmSelect = picker.querySelectorAll('select')[2];
+            ampmSelect.options[0].textContent = langData.am;
+            ampmSelect.options[1].textContent = langData.pm;
+        });
+
         localStorage.setItem('preferredLanguage', lang);
         renderQuote(); // Re-render quote in the new language
     }
@@ -86,33 +152,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Core Clock and UI Logic ---
-    function calculateAndUpdate() {
+    function calculatePercentage() {
         const now = new Date();
         let wakeUpTime = new Date();
-        const [wakeHours, wakeMinutes] = wakeUpTimeInput.value.split(':');
+        const wakeUpTime24 = getTimePickerValue(wakeUpPickerContainer);
+        const [wakeHours, wakeMinutes] = wakeUpTime24.split(':');
         wakeUpTime.setHours(wakeHours, wakeMinutes, 0, 0);
 
         let sleepTime = new Date();
-        const [sleepHours, sleepMinutes] = sleepTimeInput.value.split(':');
+        const sleepTime24 = getTimePickerValue(sleepPickerContainer);
+        const [sleepHours, sleepMinutes] = sleepTime24.split(':');
         sleepTime.setHours(sleepHours, sleepMinutes, 0, 0);
 
         if (sleepTime <= wakeUpTime) {
             if (now < sleepTime || now >= wakeUpTime) {
-                // Today's cycle, sleep time is tomorrow
                 if(now < sleepTime) {
                     wakeUpTime.setDate(wakeUpTime.getDate() - 1);
                 } else {
                     sleepTime.setDate(sleepTime.getDate() + 1);
                 }
             } else {
-                // Yesterday's cycle is still active
                 wakeUpTime.setDate(wakeUpTime.getDate() - 1);
             }
         }
 
         let percentage = 0;
         if (now < wakeUpTime) {
-            notificationSent = false; // Reset for the new day
             percentage = 0;
         } else if (now > sleepTime) {
             percentage = 100;
@@ -122,24 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
             percentage = (elapsedTime / totalAwakeTime) * 100;
         }
 
-        percentage = Math.max(0, Math.min(100, percentage));
-        updateUI(percentage);
-
-        // Check for 95% notification
-        if (percentage >= 95 && !notificationSent) {
-            triggerNotification();
-            notificationSent = true;
-        }
+        return Math.max(0, Math.min(100, percentage));
     }
 
     function updateUI(percentage) {
-        // ... (UI update logic remains the same)
         const selectedColor = document.querySelector('input[name="color"]:checked').value;
         const selectedGraph = document.querySelector('input[name="graphType"]:checked').value;
 
         percentageText.textContent = percentage.toFixed(2) + '%';
-        barContainer.style.display = selectedGraph === 'bar' ? 'block' : 'none';
-        circleContainer.style.display = selectedGraph === 'circle' ? 'block' : 'none';
+
+        if (selectedGraph === 'circle') {
+            barContainer.style.display = 'none';
+            circleContainer.style.display = 'flex';
+            // Dynamically style percentage text for circle view
+            percentageText.style.position = 'absolute';
+            percentageText.style.fontSize = '2.5em';
+            percentageText.style.margin = '0';
+        } else { // 'bar'
+            barContainer.style.display = 'block';
+            circleContainer.style.display = 'none';
+            // Reset style for bar view
+            percentageText.style.position = 'static';
+            percentageText.style.fontSize = '24px';
+            percentageText.style.marginTop = '10px';
+            percentageText.style.marginBottom = '20px';
+        }
 
         progressBar.style.width = percentage + '%';
         progressBar.style.backgroundColor = selectedColor;
@@ -149,33 +221,55 @@ document.addEventListener('DOMContentLoaded', () => {
         circleProgress.style.stroke = selectedColor;
     }
 
+    function updateClock() {
+        const percentage = calculatePercentage();
+
+        // Trigger notification only when crossing the 95% threshold
+        if (percentage >= 95 && lastPercentage < 95) {
+            triggerNotification();
+        }
+
+        lastPercentage = percentage; // Update for the next tick
+        updateUI(percentage);
+    }
+
     function startClock() {
         if (intervalId) clearInterval(intervalId);
-        notificationSent = false; // Reset notification on new 'Set'
 
-        // Save current time settings to localStorage
-        localStorage.setItem('wakeUpTime', wakeUpTimeInput.value);
-        localStorage.setItem('sleepTime', sleepTimeInput.value);
+        // Save settings
+        localStorage.setItem('wakeUpTime', getTimePickerValue(wakeUpPickerContainer));
+        localStorage.setItem('sleepTime', getTimePickerValue(sleepPickerContainer));
 
-        calculateAndUpdate();
-        intervalId = setInterval(calculateAndUpdate, 1000);
+        // Perform initial calculation and UI update
+        const initialPercentage = calculatePercentage();
+        lastPercentage = initialPercentage; // Set baseline to prevent notification on load
+        updateUI(initialPercentage);
+
+        // Start the timer
+        intervalId = setInterval(updateClock, 1000);
     }
 
     // --- Initial Setup ---
     function initialize() {
-        // Load preferred language
+        // 1. Create the time pickers first
+        createTimePicker(wakeUpPickerContainer);
+        createTimePicker(sleepPickerContainer);
+
+        // 2. Load preferred language (this will also translate AM/PM)
         const preferredLanguage = localStorage.getItem('preferredLanguage') || 'en';
         languageSelector.value = preferredLanguage;
         setLanguage(preferredLanguage);
 
-        // Load saved times, or use defaults
-        wakeUpTimeInput.value = localStorage.getItem('wakeUpTime') || '07:00';
-        sleepTimeInput.value = localStorage.getItem('sleepTime') || '23:00';
+        // 3. Load saved times, or use defaults, and set the picker values
+        const savedWakeUpTime = localStorage.getItem('wakeUpTime') || '07:00';
+        const savedSleepTime = localStorage.getItem('sleepTime') || '23:00';
+        setTimePickerValue(wakeUpPickerContainer, savedWakeUpTime);
+        setTimePickerValue(sleepPickerContainer, savedSleepTime);
 
         // Set up event listeners
         setButton.addEventListener('click', startClock);
-        graphTypeRadios.forEach(radio => radio.addEventListener('change', calculateAndUpdate));
-        colorRadios.forEach(radio => radio.addEventListener('change', calculateAndUpdate));
+        graphTypeRadios.forEach(radio => radio.addEventListener('change', () => updateUI(calculatePercentage())));
+        colorRadios.forEach(radio => radio.addEventListener('change', () => updateUI(calculatePercentage())));
         languageSelector.addEventListener('change', (e) => setLanguage(e.target.value));
 
         // Initial actions

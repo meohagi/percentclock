@@ -15,7 +15,9 @@ const languages = {
         languageEN: "English",
         languageKO: "Korean",
         languageJA: "Japanese",
-        languageCN: "Chinese"
+        languageCN: "Chinese",
+        am: "AM",
+        pm: "PM"
     },
     ko: {
         title: "하루 진행률",
@@ -33,7 +35,9 @@ const languages = {
         languageEN: "영어",
         languageKO: "한국어",
         languageJA: "일본어",
-        languageCN: "중국어"
+        languageCN: "중국어",
+        am: "오전",
+        pm: "오후"
     },
     ja: {
         title: "今日の進捗",
@@ -51,7 +55,9 @@ const languages = {
         languageEN: "英語",
         languageKO: "韓国語",
         languageJA: "日本語",
-        languageCN: "中国語"
+        languageCN: "中国語",
+        am: "午前",
+        pm: "午後"
     },
     cn: {
         title: "每日进度",
@@ -69,6 +75,8 @@ const languages = {
         languageEN: "英语",
         languageKO: "韩语",
         languageJA: "日语",
-        languageCN: "中文"
+        languageCN: "中文",
+        am: "上午",
+        pm: "下午"
     }
 };

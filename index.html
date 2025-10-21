@@ -18,11 +18,15 @@
         </div>
         <h1 data-i18n-key="title">Daily Progress</h1>
         <div class="settings">
-            <div>
-                <label for="wakeUpTime" data-i18n-key="wakeUpLabel">Wake-up Time:</label>
-                <input type="time" id="wakeUpTime" value="07:00">
-                <label for="sleepTime" data-i18n-key="sleepLabel">Sleep Time:</label>
-                <input type="time" id="sleepTime" value="23:00">
+            <div class="time-picker-container">
+                <label data-i18n-key="wakeUpLabel">Wake-up Time:</label>
+                <div class="time-picker" id="wakeUpPicker">
+                    <!-- Options will be populated by script.js -->
+                </div>
+                <label data-i18n-key="sleepLabel">Sleep Time:</label>
+                <div class="time-picker" id="sleepPicker">
+                    <!-- Options will be populated by script.js -->
+                </div>
             </div>
             <div class="options">
                 <div class="option-group">
