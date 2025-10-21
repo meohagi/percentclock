@@ -89,15 +89,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // Quote elements
     const quoteText = document.getElementById('quote-text');
     const quoteAuthor = document.getElementById('quote-author');
+    const languageSwitch = document.getElementById('languageSwitch');
+
+    let currentQuote = null;
 
     function displayRandomQuote() {
         if (typeof quotes !== 'undefined' && quotes.length > 0) {
             const randomIndex = Math.floor(Math.random() * quotes.length);
-            const randomQuote = quotes[randomIndex];
-            quoteText.textContent = `"${randomQuote.quote}"`;
-            quoteAuthor.textContent = `- ${randomQuote.author}`;
+            currentQuote = quotes[randomIndex];
+            renderQuote();
         }
     }
+
+    function renderQuote() {
+        if (!currentQuote) return;
+
+        const isKorean = languageSwitch.checked;
+        const quoteToDisplay = isKorean ? currentQuote.quote_ko : currentQuote.quote_en;
+
+        quoteText.textContent = `"${quoteToDisplay}"`;
+        quoteAuthor.textContent = `- ${currentQuote.author}`;
+    }
+
+    // Event Listeners for quotes
+    languageSwitch.addEventListener('change', renderQuote);
 
     // Initial start
     startClock();
