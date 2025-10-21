@@ -8,33 +8,41 @@
 </head>
 <body>
     <div class="container">
-        <h1>하루 진행률</h1>
+        <div class="header-controls">
+            <select id="languageSelector">
+                <option value="en" data-i18n-key="languageEN">English</option>
+                <option value="ko" data-i18n-key="languageKO">Korean</option>
+                <option value="ja" data-i18n-key="languageJA">Japanese</option>
+                <option value="cn" data-i18n-key="languageCN">Chinese</option>
+            </select>
+        </div>
+        <h1 data-i18n-key="title">Daily Progress</h1>
         <div class="settings">
             <div>
-                <label for="wakeUpTime">일어나는 시각:</label>
+                <label for="wakeUpTime" data-i18n-key="wakeUpLabel">Wake-up Time:</label>
                 <input type="time" id="wakeUpTime" value="07:00">
-                <label for="sleepTime">잠드는 시각:</label>
+                <label for="sleepTime" data-i18n-key="sleepLabel">Sleep Time:</label>
                 <input type="time" id="sleepTime" value="23:00">
             </div>
             <div class="options">
                 <div class="option-group">
-                    <span>그래프 형태:</span>
+                    <span data-i18n-key="graphTypeLabel">Graph Type:</span>
                     <input type="radio" id="bar" name="graphType" value="bar" checked>
-                    <label for="bar">막대</label>
+                    <label for="bar" data-i18n-key="barLabel">Bar</label>
                     <input type="radio" id="circle" name="graphType" value="circle">
-                    <label for="circle">원형</label>
+                    <label for="circle" data-i18n-key="circleLabel">Circle</label>
                 </div>
                 <div class="option-group">
-                    <span>색상:</span>
+                    <span data-i18n-key="colorLabel">Color:</span>
                     <input type="radio" id="green" name="color" value="#4caf50" checked>
-                    <label for="green">초록</label>
+                    <label for="green" data-i18n-key="greenLabel">Green</label>
                     <input type="radio" id="red" name="color" value="#f44336">
-                    <label for="red">빨강</label>
+                    <label for="red" data-i18n-key="redLabel">Red</label>
                     <input type="radio" id="blue" name="color" value="#2196f3">
-                    <label for="blue">파랑</label>
+                    <label for="blue" data-i18n-key="blueLabel">Blue</label>
                 </div>
             </div>
-            <button id="setButton">설정</button>
+            <button id="setButton" data-i18n-key="setButton">Set</button>
         </div>
         <div class="progress-container" id="bar-container">
             <div class="progress-bar" id="progressBar"></div>
@@ -47,20 +55,13 @@
         </div>
         <p id="percentage">0%</p>
         <div class="quote-section">
-            <div class="language-toggle">
-                <span>EN</span>
-                <label class="switch">
-                    <input type="checkbox" id="languageSwitch">
-                    <span class="slider round"></span>
-                </label>
-                <span>KO</span>
-            </div>
             <div id="quote-container">
                 <p id="quote-text"></p>
                 <p id="quote-author"></p>
             </div>
         </div>
     </div>
+    <script src="languages.js"></script>
     <script src="quotes.js"></script>
     <script src="script.js"></script>
 </body>
