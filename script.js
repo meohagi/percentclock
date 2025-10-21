@@ -86,6 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
     graphTypeRadios.forEach(radio => radio.addEventListener('change', calculateAndUpdate));
     colorRadios.forEach(radio => radio.addEventListener('change', calculateAndUpdate));
 
+    // Quote elements
+    const quoteText = document.getElementById('quote-text');
+    const quoteAuthor = document.getElementById('quote-author');
+
+    function displayRandomQuote() {
+        if (typeof quotes !== 'undefined' && quotes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const randomQuote = quotes[randomIndex];
+            quoteText.textContent = `"${randomQuote.quote}"`;
+            quoteAuthor.textContent = `- ${randomQuote.author}`;
+        }
+    }
+
     // Initial start
     startClock();
+    displayRandomQuote();
 });
