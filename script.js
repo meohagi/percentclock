@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Core Clock and UI Logic ---
     function calculateAndUpdate() {
         const now = new Date();
-        // ... (rest of the calculation logic remains the same)
         let wakeUpTime = new Date();
         const [wakeHours, wakeMinutes] = wakeUpTimeInput.value.split(':');
         wakeUpTime.setHours(wakeHours, wakeMinutes, 0, 0);
@@ -92,25 +91,29 @@ document.addEventListener('DOMContentLoaded', () => {
         sleepTime.setHours(sleepHours, sleepMinutes, 0, 0);
 
         if (sleepTime <= wakeUpTime) {
-            if (now < sleepTime) {
-                wakeUpTime.setDate(wakeUpTime.getDate() - 1);
+            if (now < sleepTime || now >= wakeUpTime) {
+                // Today's cycle, sleep time is tomorrow
+                if(now < sleepTime) {
+                    wakeUpTime.setDate(wakeUpTime.getDate() - 1);
+                } else {
+                    sleepTime.setDate(sleepTime.getDate() + 1);
+                }
             } else {
-                sleepTime.setDate(sleepTime.getDate() + 1);
-            }
-        } else {
-             // Reset notification flag for a new day cycle
-            if (now < wakeUpTime) {
-                notificationSent = false;
+                // Yesterday's cycle is still active
+                wakeUpTime.setDate(wakeUpTime.getDate() - 1);
             }
         }
 
         let percentage = 0;
-        if (now >= wakeUpTime && now <= sleepTime) {
+        if (now < wakeUpTime) {
+            notificationSent = false; // Reset for the new day
+            percentage = 0;
+        } else if (now > sleepTime) {
+            percentage = 100;
+        } else {
             const totalAwakeTime = sleepTime.getTime() - wakeUpTime.getTime();
             const elapsedTime = now.getTime() - wakeUpTime.getTime();
             percentage = (elapsedTime / totalAwakeTime) * 100;
-        } else if (now > sleepTime) {
-            percentage = 100;
         }
 
         percentage = Math.max(0, Math.min(100, percentage));
