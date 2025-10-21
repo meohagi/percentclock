@@ -1,9 +1,12 @@
 const { app, BrowserWindow, ipcMain, Notification } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
+
+let mainWindow;
 
 function createWindow () {
   // 브라우저 창을 생성합니다.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -27,6 +30,9 @@ function createWindow () {
 app.whenReady().then(() => {
   createWindow();
 
+  // Trigger the update check on startup
+  autoUpdater.checkForUpdates();
+
   app.on('activate', function () {
     // macOS에서는 dock 아이콘이 클릭되고 다른 창이 열려있지 않을 때
     // 앱에서 창을 다시 생성하는 것이 일반적입니다.
@@ -42,4 +48,29 @@ app.on('window-all-closed', function () {
 // 네이티브 알림을 위한 IPC 핸들러
 ipcMain.on('show-notification', (event, title, body) => {
   new Notification({ title, body }).show();
+});
+
+// --- Auto Updater Logic ---
+autoUpdater.on('update-available', () => {
+  mainWindow.webContents.send('update-message', 'updateAvailable');
+});
+
+autoUpdater.on('update-not-available', () => {
+  mainWindow.webContents.send('update-message', 'updateNotAvailable');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update-message', 'updateDownloaded');
+});
+
+autoUpdater.on('error', (err) => {
+  mainWindow.webContents.send('update-message', 'updateError', err.message);
+});
+
+ipcMain.on('check-for-update', () => {
+  autoUpdater.checkForUpdates();
+});
+
+ipcMain.on('restart-app', () => {
+  autoUpdater.quitAndInstall();
 });

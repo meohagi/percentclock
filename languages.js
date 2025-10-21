@@ -17,7 +17,12 @@ const languages = {
         languageJA: "Japanese",
         languageCN: "Chinese",
         am: "AM",
-        pm: "PM"
+        pm: "PM",
+        updateButton: "Check for Updates",
+        updateAvailable: "A new version is available! Downloading...",
+        updateNotAvailable: "You are using the latest version.",
+        updateDownloaded: "Update downloaded. Restart the app to install.",
+        updateError: "Error during update."
     },
     ko: {
         title: "하루 진행률",
@@ -37,7 +42,12 @@ const languages = {
         languageJA: "일본어",
         languageCN: "중국어",
         am: "오전",
-        pm: "오후"
+        pm: "오후",
+        updateButton: "업데이트 확인",
+        updateAvailable: "새로운 버전이 있습니다! 다운로드 중...",
+        updateNotAvailable: "최신 버전을 사용 중입니다.",
+        updateDownloaded: "업데이트가 다운로드되었습니다. 앱을 다시 시작하여 설치하세요.",
+        updateError: "업데이트 중 오류가 발생했습니다."
     },
     ja: {
         title: "今日の進捗",
@@ -57,7 +67,12 @@ const languages = {
         languageJA: "日本語",
         languageCN: "中国語",
         am: "午前",
-        pm: "午後"
+        pm: "午後",
+        updateButton: "更新を確認",
+        updateAvailable: "新しいバージョンがあります！ダウンロード中...",
+        updateNotAvailable: "最新バージョンを使用しています。",
+        updateDownloaded: "アップデートがダウンロードされました。アプリを再起動してインストールしてください。",
+        updateError: "アップデート中にエラーが発生しました。"
     },
     cn: {
         title: "每日进度",
@@ -77,6 +92,11 @@ const languages = {
         languageJA: "日语",
         languageCN: "中文",
         am: "上午",
-        pm: "下午"
+        pm: "下午",
+        updateButton: "检查更新",
+        updateAvailable: "有新版本可用！正在下载...",
+        updateNotAvailable: "您使用的是最新版本。",
+        updateDownloaded: "更新已下载。请重启应用以安装。",
+        updateError: "更新过程中出错。"
     }
 };

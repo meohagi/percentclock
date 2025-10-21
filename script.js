@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const wakeUpPickerContainer = document.getElementById('wakeUpPicker');
     const sleepPickerContainer = document.getElementById('sleepPicker');
     const setButton = document.getElementById('setButton');
+    const updateButton = document.getElementById('updateButton');
+    const updateInfo = document.getElementById('update-info');
     const percentageText = document.getElementById('percentage');
     const graphTypeRadios = document.querySelectorAll('input[name="graphType"]');
     const colorRadios = document.querySelectorAll('input[name="color"]');
@@ -268,9 +270,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set up event listeners
         setButton.addEventListener('click', startClock);
+        updateButton.addEventListener('click', () => {
+            if (window.ipcRenderer) {
+                window.ipcRenderer.send('check-for-update');
+            }
+        });
         graphTypeRadios.forEach(radio => radio.addEventListener('change', () => updateUI(calculatePercentage())));
         colorRadios.forEach(radio => radio.addEventListener('change', () => updateUI(calculatePercentage())));
         languageSelector.addEventListener('change', (e) => setLanguage(e.target.value));
+
+        // Listen for update messages from the main process
+        if (window.ipcRenderer) {
+            window.ipcRenderer.on('update-message', (event, messageKey, ...args) => {
+                const lang = languageSelector.value;
+                let message = languages[lang][messageKey];
+
+                if (messageKey === 'updateDownloaded') {
+                    // Create a clickable restart link
+                    message += ` <a href="#" id="restart-app">Restart</a>`;
+                }
+
+                updateInfo.innerHTML = message;
+
+                // Add click listener if the restart link was created
+                if (messageKey === 'updateDownloaded') {
+                    document.getElementById('restart-app').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.ipcRenderer.send('restart-app');
+                    });
+                }
+            });
+        }
 
         // Initial actions
         startClock();

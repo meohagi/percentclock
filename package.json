@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "1.0.0",
+  "name": "percentage-clock",
+  "version": "1.0.1",
   "description": "A percentage clock desktop application.",
   "main": "main.js",
   "scripts": {
@@ -23,12 +23,14 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "meohagi",
+      "repo": "percentclock"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/meohagi/percentclock.git"
-  },
+  "repository": "github:meohagi/percentclock",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -40,5 +42,8 @@
   "devDependencies": {
     "electron": "^38.3.0",
     "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
   }
 }

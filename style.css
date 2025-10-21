@@ -54,6 +54,20 @@ body {
     gap: 5px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.update-info {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #333;
+    min-height: 20px; /* Reserve space for the message */
+}
+
 .progress-container {
     width: 100%;
     background-color: #e0e0e0;
