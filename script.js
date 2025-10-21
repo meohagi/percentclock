@@ -59,10 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerNotification() {
         const lang = languageSelector.value;
         const message = languages[lang].notificationMessage;
+        const title = languages[lang].title;
 
-        // 1. Browser Notification
-        if (Notification.permission === 'granted') {
-            new Notification(languages[lang].title, { body: message });
+        // 1. Electron Native Notification
+        if (window.ipcRenderer) {
+            window.ipcRenderer.send('show-notification', title, message);
+        } else { // Fallback for standard browser environment
+            if (Notification.permission === 'granted') {
+                new Notification(title, { body: message });
+            }
         }
 
         // 2. Speech Synthesis
@@ -74,7 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAndRequestNotificationPermission() {
-        if ('Notification' in window && Notification.permission !== 'granted') {
+        // For standard browser environment. Electron handles this implicitly.
+        if (!window.ipcRenderer && 'Notification' in window && Notification.permission !== 'granted') {
             Notification.requestPermission();
         }
     }
