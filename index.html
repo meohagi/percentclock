@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퍼센트 시계</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>하루 진행률</h1>
+        <div class="settings">
+            <label for="wakeUpTime">일어나는 시간:</label>
+            <input type="time" id="wakeUpTime" value="07:00">
+            <label for="sleepTime">잠드는 시간:</label>
+            <input type="time" id="sleepTime" value="23:00">
+            <button id="setButton">설정</button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p id="percentage">0%</p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
