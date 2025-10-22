@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const setButton = document.getElementById('setButton');
     const updateButton = document.getElementById('updateButton');
     const updateInfo = document.getElementById('update-info');
-    const percentageText = document.getElementById('percentage');
+    const barPercentageText = document.getElementById('barPercentage');
+    const circlePercentageText = document.getElementById('circlePercentage');
     const graphTypeRadios = document.querySelectorAll('input[name="graphType"]');
     const colorRadios = document.querySelectorAll('input[name="color"]');
     const barContainer = document.getElementById('bar-container');
@@ -195,24 +196,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUI(percentage) {
         const selectedColor = document.querySelector('input[name="color"]:checked').value;
         const selectedGraph = document.querySelector('input[name="graphType"]:checked').value;
+        const percentageString = percentage.toFixed(2) + '%';
 
-        percentageText.textContent = percentage.toFixed(2) + '%';
+        // Update both text elements with the new value
+        barPercentageText.textContent = percentageString;
+        circlePercentageText.textContent = percentageString;
 
         if (selectedGraph === 'circle') {
             barContainer.style.display = 'none';
+            barPercentageText.style.display = 'none';
             circleContainer.style.display = 'flex';
-            // Dynamically style percentage text for circle view
-            percentageText.style.position = 'absolute';
-            percentageText.style.fontSize = '2.5em';
-            percentageText.style.margin = '0';
+            circlePercentageText.style.display = 'block';
         } else { // 'bar'
             barContainer.style.display = 'block';
+            barPercentageText.style.display = 'block';
             circleContainer.style.display = 'none';
-            // Reset style for bar view
-            percentageText.style.position = 'static';
-            percentageText.style.fontSize = '24px';
-            percentageText.style.marginTop = '10px';
-            percentageText.style.marginBottom = '20px';
+            circlePercentageText.style.display = 'none';
         }
 
         progressBar.style.width = percentage + '%';
