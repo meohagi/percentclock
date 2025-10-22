@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, Notification, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, Menu, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
@@ -34,23 +35,72 @@ function createSettingsWindow() {
   });
 }
 
-function createMenu() {
+let currentTranslations = {}; // Store translations for use in dialogs etc.
+
+function exportWindowAsImage() {
+    if (!mainWindow) return;
+
+    mainWindow.webContents.capturePage().then(image => {
+        const picturesPath = app.getPath('pictures');
+        const timestamp = new Date().toISOString().replace(/:/g, '-');
+        const filePath = path.join(picturesPath, `percentage-clock-${timestamp}.png`);
+
+        fs.writeFile(filePath, image.toPNG(), (err) => {
+            if (err) {
+                dialog.showErrorBox(
+                    currentTranslations.exportErrorTitle || 'Export Failed',
+                    currentTranslations.exportErrorMessage || 'Could not save the screenshot.'
+                );
+                return;
+            }
+            dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: currentTranslations.exportSuccessTitle || 'Export Successful',
+                message: currentTranslations.exportSuccessMessage || 'Screenshot saved to your Pictures folder.'
+            });
+        });
+    }).catch(err => {
+        console.error('Failed to capture page:', err);
+        dialog.showErrorBox(
+            currentTranslations.exportErrorTitle || 'Export Failed',
+            currentTranslations.exportErrorMessage || 'Could not save the screenshot.'
+        );
+    });
+}
+
+function createMenu(translations) {
+    currentTranslations = translations;
     const template = [
         {
-            label: 'App',
+            label: translations.menuFile || 'File',
             submenu: [
                 {
-                    label: 'Settings',
+                    label: translations.menuExport || 'Export as Image',
+                    click: exportWindowAsImage
+                },
+                { type: 'separator' },
+                {
+                    label: translations.menuExit || 'Exit',
+                    role: 'quit'
+                }
+            ]
+        },
+        {
+            label: translations.menuEdit || 'Edit',
+            submenu: [
+                {
+                    label: translations.menuSettings || 'Settings',
                     accelerator: 'CmdOrCtrl+,',
                     click: () => {
                         createSettingsWindow();
                     }
-                },
-                { type: 'separator' },
-                { role: 'quit' }
+                }
             ]
         },
-        // You can add other menus like 'Edit', 'View' etc. here
+        {
+            label: translations.menuHelp || 'Help',
+            submenu: []
+        }
     ];
 
     const menu = Menu.buildFromTemplate(template);
@@ -74,8 +124,7 @@ function createWindow () {
 
 app.whenReady().then(() => {
   createWindow();
-  createMenu();
-
+  // The menu is now created dynamically when the renderer process sends language info.
   autoUpdater.checkForUpdates();
 
   app.on('activate', function () {
@@ -124,4 +173,8 @@ ipcMain.on('close-settings-window', () => {
     if (settingsWindow) {
         settingsWindow.close();
     }
+});
+
+ipcMain.on('update-menu', (event, translations) => {
+    createMenu(translations);
 });

@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 element.textContent = langData[key];
             }
         });
+
+        // Also send an IPC message to update the main window's menu
+        if (window.ipcRenderer) {
+            window.ipcRenderer.send('update-menu', langData);
+        }
     }
 
     // Event Listeners

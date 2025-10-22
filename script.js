@@ -91,7 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const langData = languages[lang];
         document.querySelectorAll('[data-i18n-key]').forEach(element => {
             const key = element.getAttribute('data-i18n-key');
-            element.textContent = langData[key];
+            if(langData[key]) {
+               element.textContent = langData[key];
+            }
         });
 
         // Update AM/PM selectors
@@ -102,6 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         localStorage.setItem('preferredLanguage', lang);
+
+        // Send new language data to main process to update the menu
+        if (window.ipcRenderer) {
+            window.ipcRenderer.send('update-menu', langData);
+        }
+
         renderQuote(); // Re-render quote in the new language
     }
 
