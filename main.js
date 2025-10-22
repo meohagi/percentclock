@@ -1,41 +1,84 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, Menu } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
+let settingsWindow;
+
+function createSettingsWindow() {
+  if (settingsWindow) {
+    settingsWindow.focus();
+    return;
+  }
+
+  settingsWindow = new BrowserWindow({
+    width: 550,
+    height: 400,
+    parent: mainWindow,
+    modal: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+    autoHideMenuBar: true
+  });
+
+  settingsWindow.loadFile('settings.html');
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null;
+    // Notify the main window that settings might have changed
+    if (mainWindow) {
+        mainWindow.webContents.send('settings-closed');
+    }
+  });
+}
+
+function createMenu() {
+    const template = [
+        {
+            label: 'App',
+            submenu: [
+                {
+                    label: 'Settings',
+                    accelerator: 'CmdOrCtrl+,',
+                    click: () => {
+                        createSettingsWindow();
+                    }
+                },
+                { type: 'separator' },
+                { role: 'quit' }
+            ]
+        },
+        // You can add other menus like 'Edit', 'View' etc. here
+    ];
+
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+}
 
 function createWindow () {
-  // 브라우저 창을 생성합니다.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      // In a real app, you'd want to be more secure than this
       contextIsolation: false,
       nodeIntegration: true
     }
   });
 
-  // 앱의 index.html 파일을 로드합니다.
   mainWindow.loadFile('index.html');
-
-  // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 }
 
-// 이 메서드는 Electron의 초기화가 완료되고
-// 브라우저 창을 생성할 준비가 되었을 때 호출됩니다.
-// 일부 API는 이 이벤트 이후에만 사용할 수 있습니다.
 app.whenReady().then(() => {
   createWindow();
+  createMenu();
 
-  // Trigger the update check on startup
   autoUpdater.checkForUpdates();
 
   app.on('activate', function () {
-    // macOS에서는 dock 아이콘이 클릭되고 다른 창이 열려있지 않을 때
-    // 앱에서 창을 다시 생성하는 것이 일반적입니다.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
@@ -51,12 +94,14 @@ ipcMain.on('show-notification', (event, title, body) => {
 });
 
 // --- Auto Updater Logic ---
-autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('update-message', 'updateAvailable');
+autoUpdater.on('update-available', (info) => {
+  const currentVersion = app.getVersion();
+  mainWindow.webContents.send('update-message', 'updateAvailable', { currentVersion, latestVersion: info.version });
 });
 
-autoUpdater.on('update-not-available', () => {
-  mainWindow.webContents.send('update-message', 'updateNotAvailable');
+autoUpdater.on('update-not-available', (info) => {
+  const currentVersion = app.getVersion();
+  mainWindow.webContents.send('update-message', 'updateNotAvailable', { currentVersion, latestVersion: info.version });
 });
 
 autoUpdater.on('update-downloaded', () => {
@@ -73,4 +118,10 @@ ipcMain.on('check-for-update', () => {
 
 ipcMain.on('restart-app', () => {
   autoUpdater.quitAndInstall();
+});
+
+ipcMain.on('close-settings-window', () => {
+    if (settingsWindow) {
+        settingsWindow.close();
+    }
 });

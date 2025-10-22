@@ -126,6 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Notification and Speech ---
     function triggerNotification() {
+        const notificationsEnabled = JSON.parse(localStorage.getItem('notificationsEnabled')) ?? true;
+        if (!notificationsEnabled) return;
+
         const lang = languageSelector.value;
         const message = languages[lang].notificationMessage;
         const title = languages[lang].title;
@@ -205,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedGraph === 'circle') {
             barContainer.style.display = 'none';
             barPercentageText.style.display = 'none';
-            circleContainer.style.display = 'flex';
+            circleContainer.style.display = 'block'; // Changed from 'flex'
             circlePercentageText.style.display = 'block';
         } else { // 'bar'
             barContainer.style.display = 'block';
@@ -278,26 +281,46 @@ document.addEventListener('DOMContentLoaded', () => {
         colorRadios.forEach(radio => radio.addEventListener('change', () => updateUI(calculatePercentage())));
         languageSelector.addEventListener('change', (e) => setLanguage(e.target.value));
 
-        // Listen for update messages from the main process
+        // Listen for messages from the main process
         if (window.ipcRenderer) {
-            window.ipcRenderer.on('update-message', (event, messageKey, ...args) => {
+            // Update messages
+            window.ipcRenderer.on('update-message', (event, messageKey, versions = {}) => {
                 const lang = languageSelector.value;
-                let message = languages[lang][messageKey];
+                let message = languages[lang][messageKey] || 'Unknown update status.';
+
+                // Replace placeholders with actual version numbers
+                message = message.replace('{currentVersion}', versions.currentVersion || 'N/A');
+                message = message.replace('{latestVersion}', versions.latestVersion || 'N/A');
 
                 if (messageKey === 'updateDownloaded') {
-                    // Create a clickable restart link
-                    message += ` <a href="#" id="restart-app">Restart</a>`;
+                    const restartKey = 'restartAndInstall';
+                    const restartText = languages[lang][restartKey] || 'Restart';
+                    message += ` <a href="#" id="restart-app">${restartText}</a>`;
+                } else if (messageKey === 'updateError') {
+                    const errorMessage = versions; // In case of error, 'versions' is the error message
+                    console.error('Update Error:', errorMessage);
+                    message = languages[lang]['updateErrorMsg'] || 'An error occurred during update.';
                 }
 
                 updateInfo.innerHTML = message;
 
-                // Add click listener if the restart link was created
                 if (messageKey === 'updateDownloaded') {
                     document.getElementById('restart-app').addEventListener('click', (e) => {
                         e.preventDefault();
                         window.ipcRenderer.send('restart-app');
                     });
                 }
+            });
+
+            // Settings window closed
+            window.ipcRenderer.on('settings-closed', () => {
+                // Reload language to apply changes
+                const preferredLanguage = localStorage.getItem('preferredLanguage') || 'en';
+                if (languageSelector.value !== preferredLanguage) {
+                    languageSelector.value = preferredLanguage;
+                    setLanguage(preferredLanguage);
+                }
+                // The clock will automatically respect the new notification setting on its next tick
             });
         }
 

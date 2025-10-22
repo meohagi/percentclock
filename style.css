@@ -85,7 +85,12 @@ body {
 
 .circle-container {
     position: relative;
-    margin: 10px auto; /* Adjusted margin */
+    margin: 10px auto;
+    width: 200px;
+    height: 200px;
+    display: flex; /* Add flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 .circle-bg {

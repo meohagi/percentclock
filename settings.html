@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <div class="container">
+        <h1 data-i18n-key="settingsTitle">Settings</h1>
+
+        <div class="setting-group">
+            <label for="languageSelector" data-i18n-key="languageLabel">Language:</label>
+            <select id="languageSelector">
+                <option value="en" data-i18n-key="languageEN">English</option>
+                <option value="ko" data-i18n-key="languageKO">Korean</option>
+                <option value="ja" data-i18n-key="languageJA">Japanese</option>
+                <option value="cn" data-i18n-key="languageCN">Chinese</option>
+            </select>
+        </div>
+
+        <div class="setting-group">
+            <label for="notificationToggle" data-i18n-key="notificationLabel">Enable 95% Notification:</label>
+            <input type="checkbox" id="notificationToggle" checked>
+        </div>
+
+        <div class="button-container">
+            <button id="saveButton" data-i18n-key="saveButton">Save</button>
+            <button id="cancelButton" data-i18n-key="cancelButton">Cancel</button>
+        </div>
+    </div>
+    <script src="languages.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

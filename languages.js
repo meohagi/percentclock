@@ -19,10 +19,11 @@ const languages = {
         am: "AM",
         pm: "PM",
         updateButton: "Check for Updates",
-        updateAvailable: "A new version is available! Downloading...",
-        updateNotAvailable: "You are using the latest version.",
-        updateDownloaded: "Update downloaded. Restart the app to install.",
-        updateError: "Error during update."
+        updateAvailable: "New version ({latestVersion}) available! (Current: {currentVersion}) Downloading...",
+        updateNotAvailable: "You are on the latest version ({currentVersion}).",
+        updateDownloaded: "Update downloaded.",
+        restartAndInstall: "Restart to Install",
+        updateErrorMsg: "An error occurred while checking for updates. Please try again later."
     },
     ko: {
         title: "하루 진행률",
@@ -44,10 +45,11 @@ const languages = {
         am: "오전",
         pm: "오후",
         updateButton: "업데이트 확인",
-        updateAvailable: "새로운 버전이 있습니다! 다운로드 중...",
-        updateNotAvailable: "최신 버전을 사용 중입니다.",
-        updateDownloaded: "업데이트가 다운로드되었습니다. 앱을 다시 시작하여 설치하세요.",
-        updateError: "업데이트 중 오류가 발생했습니다."
+        updateAvailable: "새 버전({latestVersion})이 있습니다! (현재: {currentVersion}) 다운로드 중...",
+        updateNotAvailable: "최신 버전({currentVersion})을 사용 중입니다.",
+        updateDownloaded: "업데이트가 다운로드되었습니다.",
+        restartAndInstall: "재시작하여 설치",
+        updateErrorMsg: "업데이트 확인 중 오류가 발생했습니다. 나중에 다시 시도해주세요."
     },
     ja: {
         title: "今日の進捗",
@@ -69,10 +71,11 @@ const languages = {
         am: "午前",
         pm: "午後",
         updateButton: "更新を確認",
-        updateAvailable: "新しいバージョンがあります！ダウンロード中...",
-        updateNotAvailable: "最新バージョンを使用しています。",
-        updateDownloaded: "アップデートがダウンロードされました。アプリを再起動してインストールしてください。",
-        updateError: "アップデート中にエラーが発生しました。"
+        updateAvailable: "新しいバージョン({latestVersion})があります！ (現在: {currentVersion}) ダウンロード中...",
+        updateNotAvailable: "最新バージョン({currentVersion})を使用しています。",
+        updateDownloaded: "アップデートがダウンロードされました。",
+        restartAndInstall: "再起動してインストール",
+        updateErrorMsg: "更新の確認中にエラーが発生しました。後でもう一度お試しください。"
     },
     cn: {
         title: "每日进度",
@@ -94,9 +97,10 @@ const languages = {
         am: "上午",
         pm: "下午",
         updateButton: "检查更新",
-        updateAvailable: "有新版本可用！正在下载...",
-        updateNotAvailable: "您使用的是最新版本。",
-        updateDownloaded: "更新已下载。请重启应用以安装。",
-        updateError: "更新过程中出错。"
+        updateAvailable: "新版本({latestVersion})可用！ (当前: {currentVersion}) 正在下载...",
+        updateNotAvailable: "您使用的是最新版本({currentVersion})。",
+        updateDownloaded: "更新已下载。",
+        restartAndInstall: "重启以安装",
+        updateErrorMsg: "检查更新时发生错误。请稍后再试。"
     }
 };
